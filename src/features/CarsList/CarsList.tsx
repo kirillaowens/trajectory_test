@@ -4,6 +4,8 @@ import { Box, IconButton, Typography, Paper } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import CarsListPanel from "../CarsListPanel/CarsListPanel";
+import CarEditModal from "../CarEdit/CarEditModal";
+import { CarType } from "../../types/types";
 
 type SortOption =
   | "none"
@@ -13,8 +15,14 @@ type SortOption =
   | "price-desc";
 
 function CarsList() {
-  const { cars, isLoading, removeCar } = useCars();
+  const { cars, isLoading, removeCar, editCar } = useCars();
+  const [editingCar, setEditingCar] = useState<CarType | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("none");
+
+  const handleEdit = (id: number, updates: Partial<CarType>) => {
+    editCar(id, updates);
+    setEditingCar(null);
+  };
 
   const sortedCars = useMemo(() => {
     if (sortBy === "none") return cars;
@@ -90,6 +98,14 @@ function CarsList() {
           </Box>
         </Paper>
       ))}
+      {editingCar && (
+        <CarEditModal
+          open={!!editingCar}
+          car={editingCar}
+          onClose={() => setEditingCar(null)}
+          onEdit={handleEdit}
+        />
+      )}
     </Box>
   );
 }

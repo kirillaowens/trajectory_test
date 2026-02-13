@@ -1,4 +1,3 @@
-// app/store/hooks/useCars.ts
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,11 +9,11 @@ import {
   editCar,
   setSortBy,
 } from "../slice/carsSlice";
-import type { RootState } from "../store";
+import type { RootState, AppDispatch } from "../store";
 import type { CarType } from "../../../types/types";
 
 export const useCars = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const cars = useSelector((state: RootState) => state.cars.items);
   const sortBy = useSelector((state: RootState) => state.cars.sortBy);
 
@@ -52,17 +51,32 @@ export const useCars = () => {
     });
   }, [cars, sortBy]);
 
+  const handleRemoveCar = (id: number) => {
+    dispatch(removeCar(id));
+  };
+
+  const handleCreateCar = (car: CarType) => {
+    dispatch(createCar(car));
+  };
+
+  const handleEditCar = (id: number, updates: Partial<CarType>) => {
+    dispatch(editCar({ id, updates }));
+  };
+
+  const handleSetSortBy = (
+    sort: "none" | "year-asc" | "year-desc" | "price-asc" | "price-desc",
+  ) => {
+    dispatch(setSortBy(sort));
+  };
+
   return {
     cars: sortedCars,
     sortBy,
     isLoading,
     error,
-    removeCar: (id: number) => dispatch(removeCar(id)),
-    createCar: (car: CarType) => dispatch(createCar(car)),
-    editCar: (id: number, updates: Partial<CarType>) =>
-      dispatch(editCar({ id, updates })),
-    setSortBy: (
-      sort: "none" | "year-asc" | "year-desc" | "price-asc" | "price-desc",
-    ) => dispatch(setSortBy(sort)),
+    removeCar: handleRemoveCar,
+    createCar: handleCreateCar,
+    editCar: handleEditCar,
+    setSortBy: handleSetSortBy,
   };
 };
