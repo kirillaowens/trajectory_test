@@ -18,7 +18,7 @@ function CarsList() {
   const { cars, isLoading, removeCar, editCar } = useCars();
   const [editingCar, setEditingCar] = useState<CarType | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("none");
-  editingCar ? console.log("da") : console.log("net");
+
   const handleEdit = (id: number, updates: Partial<CarType>) => {
     editCar(id, updates);
     setEditingCar(null);
