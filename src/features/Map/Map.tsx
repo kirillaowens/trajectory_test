@@ -6,7 +6,6 @@ import { Box } from "@mui/material";
 
 function YandexMap() {
   const { cars } = useCars();
-  cars.map((car) => console.log(car.latitude, car.longitude));
   return (
     <Box sx={{ border: "1px solid #3E7AA5" }}>
       <YMaps query={{ apikey: YANDEX_API_KEY }}>

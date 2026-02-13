@@ -18,7 +18,7 @@ function CarsList() {
   const { cars, isLoading, removeCar, editCar } = useCars();
   const [editingCar, setEditingCar] = useState<CarType | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("none");
-
+  editingCar ? console.log("da") : console.log("net");
   const handleEdit = (id: number, updates: Partial<CarType>) => {
     editCar(id, updates);
     setEditingCar(null);
@@ -89,7 +89,7 @@ function CarsList() {
             </Typography>
           </Box>
           <Box>
-            <IconButton aria-label="edit">
+            <IconButton aria-label="edit" onClick={() => setEditingCar(car)}>
               <EditIcon />
             </IconButton>
             <IconButton aria-label="delete" onClick={() => removeCar(car.id)}>
