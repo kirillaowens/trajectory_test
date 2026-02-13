@@ -1,14 +1,18 @@
 import React from "react";
-import CarsList from "../features/CarsList/CarsList";
-import Map from "../features/Map/Map";
 import { QueryProvider } from "./providers/QueryProvider";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
+import MainPage from "../pages/MainPage/MainPage";
+import { GlobalStyles } from "./style/style";
 
 function App() {
   return (
-    <QueryProvider>
-      <CarsList />
-      <Map />
-    </QueryProvider>
+    <Provider store={store}>
+      <GlobalStyles />
+      <QueryProvider>
+        <MainPage />
+      </QueryProvider>
+    </Provider>
   );
 }
 

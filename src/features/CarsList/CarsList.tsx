@@ -1,30 +1,96 @@
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getCars } from "../../shared/api/api";
+import React, { useState, useMemo } from "react";
+import { useCars } from "../../app/store/hooks/useCars";
+import { Box, IconButton, Typography, Paper } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import CarsListPanel from "../CarsListPanel/CarsListPanel";
+
+type SortOption =
+  | "none"
+  | "year-asc"
+  | "year-desc"
+  | "price-asc"
+  | "price-desc";
 
 function CarsList() {
-  const {
-    data: cars = [],
-    isPending,
-    isError,
-  } = useQuery({
-    queryKey: [""],
-    queryFn: getCars,
-  });
+  const { cars, isLoading, removeCar } = useCars();
+  const [sortBy, setSortBy] = useState<SortOption>("none");
+
+  const sortedCars = useMemo(() => {
+    if (sortBy === "none") return cars;
+
+    return [...cars].sort((a, b) => {
+      switch (sortBy) {
+        case "year-asc":
+          return a.year - b.year;
+        case "year-desc":
+          return b.year - a.year;
+        case "price-asc":
+          return a.price - b.price;
+        case "price-desc":
+          return b.price - a.price;
+        default:
+          return 0;
+      }
+    });
+  }, [cars, sortBy]);
 
   return (
-    <div>
-      {isPending && <div>Загрузка...</div>}
-      {isError && <div>Ошибка</div>}
-      {cars.map((car) => (
-        <div key={car.id}>
-          <p>{car.name}</p>
-          <p>{car.model}</p>
-          <p>{car.year}</p>
-          <p>{car.price}</p>
-        </div>
+    <Box
+      sx={{
+        height: "60vh",
+        width: "50vw",
+        overflowY: "auto",
+        border: "1px solid #3E7AA5",
+        borderRadius: 1,
+      }}
+    >
+      <CarsListPanel sortBy={sortBy} onSortChange={setSortBy} />
+
+      {isLoading && (
+        <Box sx={{ p: 2, textAlign: "center" }}>
+          <Typography>Загрузка...</Typography>
+        </Box>
+      )}
+
+      {!isLoading && sortedCars.length === 0 && (
+        <Box sx={{ p: 2, textAlign: "center" }}>
+          <Typography color="text.secondary">Список машин пуст</Typography>
+        </Box>
+      )}
+
+      {sortedCars.map((car) => (
+        <Paper
+          key={car.id}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            p: 2,
+            m: 1,
+            gap: 2,
+          }}
+          elevation={1}
+        >
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6">
+              {car.name} - {car.model}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {car.year}, {car.color}, ${car.price}
+            </Typography>
+          </Box>
+          <Box>
+            <IconButton aria-label="edit">
+              <EditIcon />
+            </IconButton>
+            <IconButton aria-label="delete" onClick={() => removeCar(car.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        </Paper>
       ))}
-    </div>
+    </Box>
   );
 }
 
